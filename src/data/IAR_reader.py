@@ -1,11 +1,17 @@
+# DATA4MIA's IAR reader
+# Saul Chipwayambokoma - chipwayambokomas@outlook.com
+# 1.0.0 June 28, 2024
+
 import pandas as pd
+import openpyxl
 ##from db_connection import get_db_connection
 
 #### Read database
 
-#data = pd.read_excel("../../data/raw/Copy_of_Emalahleni_Infrastructure_2023.xlsx",engine='openpyxl')
+## use if using interactive window
+#data = pd.read_excel("../../data/raw/ASSETS_REGISTER_2021_2022_FAR_DLM_Draft_ver_4_2.xlsb", sheet_name= 3)
 
-data = pd.read_excel("data/raw/Copy_of_Emalahleni_Infrastructure_2023.xlsx",engine='openpyxl')
+data = pd.read_excel("data/raw/Copy_of_Emalahleni_Infrastructure_2023.xlsx")
 
 #### Filtering database to retreive desired columns as specified by standard accounting rules
 
@@ -28,7 +34,7 @@ Organisation = Organisational_ID = Number = Model = Serial_Number = Description 
 
 num_columns = filtered_data.shape[1]
 
-completeness = (num_columns/31)*100
+overall_completeness = (num_columns/31)*100
 
 
 #### function to calculate completeness of categoriy within a munincipality IAR
@@ -42,11 +48,9 @@ def populate_cat(col):
 
 #### Populate xlxs completeness sheet with values
 
-list_size = 32
+my_list = [0] * 32 
 
-my_list = [0] * list_size 
-
-my_list[1] = completeness  
+my_list[1] = overall_completeness  
 
 for col in filtered_data:
     if col == "Organisation":
@@ -142,6 +146,24 @@ for col in filtered_data:
     elif col == "RUL in Years":
         RUL_in_Years = populate_cat(col)
         my_list[31] = RUL_in_Years
+
+#### Populate completeness dashboard
+
+#Use for interactive window
+#wb = openpyxl.load_workbook("../../dashboards/completeness_dashboard.xlsx")
+
+wb = openpyxl.load_workbook("dashboards/completeness_dashboard.xlsx")
+
+sheet_name = 'Sheet1'
+ws = wb[sheet_name]
+
+ws.append(my_list)
+
+#Use for interactive window
+#wb.save("../../dashboards/completeness_dashboard.xlsx")
+
+wb.save("dashboards/completeness_dashboard.xlsx")
+
 
         
         
